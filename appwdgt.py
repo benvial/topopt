@@ -12,13 +12,13 @@ sep = widgets.HTML(value="<h4></h4>")
 wl_box = widgets.FloatText(value=1.0, description="Wavelengh:")
 
 pola_dropdown = widgets.Dropdown(
-    options=["TE", "TM"], value="TE", description="Polarization:", disabled=False,
+    options=["TE", "TM"], value="TE", description="Polarization:", disabled=False
 )
 
 run_button = widgets.Button(description="Run", icon="fa-play", button_style="danger")
 
 angle_slider = widgets.FloatSlider(
-    value=0, min=0, max=360.0, step=1, description="Angle:", readout_format=".1f",
+    value=0, min=0, max=360.0, step=1, description="Angle:", readout_format=".1f"
 )
 
 mesh_slider = widgets.IntSlider(
@@ -54,7 +54,7 @@ Nitmax_slider = widgets.IntSlider(
 rfilt_box = widgets.FloatText(value=0.01, step=0.001, description="Filter radius:")
 
 starting_dropdown = widgets.Dropdown(
-    options=["constant", "random"], value="constant", description="Init type:",
+    options=["constant", "random"], value="constant", description="Init type:"
 )
 
 p0_slider = widgets.FloatSlider(

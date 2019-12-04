@@ -92,16 +92,14 @@ def initialize():
     fem.make_mesh()
     xdes, ydes, zdes = fem.des[1].T
     to.nvar = len(fem.des[0])
-    if starting_dropdown.value=="constant":
+    if starting_dropdown.value == "constant":
         to.p0 = p0_slider.value * np.ones(to.nvar)
     else:
         to.p0 = np.random.rand(to.nvar)
     return fem, to
 
 
-def run_fem(
-    fem, to, p, sens_ana=False, filt=True, proj=True,
-):
+def run_fem(fem, to, p, sens_ana=False, filt=True, proj=True):
 
     to.eps_interp = fem.eps_interp
     fem.adjoint = sens_ana
@@ -152,7 +150,7 @@ def main(rm_tmp_dir=True):
     ## objective function
     def f_obj(p, grad, filt=True, proj=True, force_xsym=True):
         sens_ana = np.size(grad) > 0
-        goal, sens = run_fem(fem, to, p, sens_ana=sens_ana, filt=filt, proj=proj,)
+        goal, sens = run_fem(fem, to, p, sens_ana=sens_ana, filt=filt, proj=proj)
         make_plots(fem, to, p, filt=filt, proj=proj)
         if sens_ana:
             grad[:] = sens
@@ -180,15 +178,16 @@ def main(rm_tmp_dir=True):
         fem.rm_tmp_dir()
     return p_thres, opt_thres
 
-def live_plot(imax=-1,freq=1., color='blue', lw=2, grid=True):
+
+def live_plot(imax=-1, freq=1.0, color="blue", lw=2, grid=True):
     plots.clear_output(wait=True)
-    t = np.linspace(-1., +1., 100)
-    t=t[0:imax]
+    t = np.linspace(-1.0, +1.0, 100)
+    t = t[0:imax]
     fig, ax = plt.subplots(1, 1, figsize=(8, 6))
-    ax.plot(t, np.sin(2 * np.pi * freq * t),
-            lw=lw, color=color)
+    ax.plot(t, np.sin(2 * np.pi * freq * t), lw=lw, color=color)
     ax.grid(grid)
-    plt.show();
+    plt.show()
+
 
 #
 # def main():
@@ -198,6 +197,7 @@ def live_plot(imax=-1,freq=1., color='blue', lw=2, grid=True):
 #     grid=True
 #     for i in range(100):
 #         live_plot(imax=i,freq=freq, color=color, lw=lw, grid=grid)
+
 
 @run_button.on_click
 def run_on_click(b):
