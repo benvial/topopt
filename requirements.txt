@@ -1,0 +1,4 @@
+git+git://github.com/benvial/pytheas@master
+ipywidgets
+plotly
+appmode

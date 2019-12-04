@@ -1,13 +1,8 @@
 #!/usr/bin/env python
 import os
-import tempfile
 import numpy as np
 from pytheas import Scatt2D
-from pytheas.material import genmat
 from pytheas.optim import topopt
-from pytheas.tools.utils import between_range
-
-# import matplotlib.pyplot as plt
 from appwdgt import *
 
 type_des = "elements"
@@ -105,6 +100,18 @@ def field_interp_grid(self):
     return x1, y1
 
 
+# def rect_desig(self):
+#     design = go.layout.Shape(
+#         type="rect",
+#         x0=-self.hx_des/2,
+#         y0=-self.hy_des/2,
+#         x1=self.hx_des/2,
+#         y1=self.hy_des/2,
+#         line=dict(color="white"),
+#     )
+#     return design
+
+
 def run_fem(fem, to, p, sens_ana=False, filt=True, proj=True):
 
     to.eps_interp = fem.eps_interp
@@ -150,6 +157,12 @@ def make_plots(fem, to, p, filt=True, proj=True):
     coutour_field.x = x_grid_map
     coutour_field.y = y_grid_map
     coutour_field.z = E
+
+    design = field_map.layout.shapes[0]
+    design.x0 = -fem.hx_des / 2
+    design.y0 = -fem.hy_des / 2
+    design.x1 = fem.hx_des / 2
+    design.y1 = fem.hy_des / 2
 
     # width = 500
     # height = int(width * fem.hy_des / fem.hx_des)

@@ -1,0 +1,4 @@
+libxcursor1
+libxft2
+libxinerama1
+libglu1-mesa
