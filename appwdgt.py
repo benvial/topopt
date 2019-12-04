@@ -2,10 +2,8 @@
 import ipywidgets as widgets
 from ipywidgets import HBox, VBox, Layout, Box
 
-import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-
 from IPython.display import display, clear_output
 
 #### ----- fem widgets
