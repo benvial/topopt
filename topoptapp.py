@@ -7,7 +7,7 @@ from pytheas.material import genmat
 from pytheas.optim import topopt
 from pytheas.tools.utils import between_range
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from appwdgt import *
 
 type_des = "elements"
@@ -99,6 +99,12 @@ def initialize():
     return fem, to
 
 
+def field_interp_grid(self):
+    x1 = np.linspace(self.domX_L, self.domX_R, self.Nix)
+    y1 = np.linspace(self.domY_B, self.domY_T, self.Niy)
+    return x1, y1
+
+
 def run_fem(fem, to, p, sens_ana=False, filt=True, proj=True):
 
     to.eps_interp = fem.eps_interp
@@ -119,45 +125,60 @@ def run_fem(fem, to, p, sens_ana=False, filt=True, proj=True):
 
 
 def make_plots(fem, to, p, filt=True, proj=True):
-    plots.clear_output(wait=True)
-    # print("Plotting")
+    if to.verbose:
+        print("Plotting")
+
     epsilon = to.make_epsilon(p, filt=filt, proj=proj)
-    qtplot = epsilon.real
-    title = r"permittivity"
-    ax1 = plt.subplot(211, aspect="equal")
-    to.plot_design(
-        ax1,
-        qtplot,
-        cmap="viridis",
-        typeplot="interp",
-        extent=(0, fem.hx_des, 0, fem.hy_des),
-        interp_method="nearest",
-    )
-    ax1.set_title(title)
-    ax2 = plt.subplot(212)
-    to.plot_convergence(ax2)
-    if to.Nit_tot > 1:
-        ax2.set_xlim((0, to.Nit_tot - 1))
-    plt.tight_layout()
-    plt.show()
-    # plt.pause(0.01)
+    scatter_conv = conv_plt.data[0]
+    scatter_conv.x = np.array(range(to.Nit_tot))
+    scatter_conv.y = np.array(to.obj_history)
+
+    ######
+    varplot = to.mesh2grid(epsilon.real, interp_method="nearest")
+    x_grid, y_grid = to.grid
+    coutour_eps = eps_map.data[0]
+    coutour_eps.x = x_grid
+    coutour_eps.y = y_grid
+    coutour_eps.z = varplot
+
+    ######
+    fem.postpro_fields()
+    u_tot = fem.get_field_map("u_tot.txt")
+    E = u_tot.real
+    x_grid_map, y_grid_map = field_interp_grid(fem)
+    coutour_field = field_map.data[0]
+    coutour_field.x = x_grid_map
+    coutour_field.y = y_grid_map
+    coutour_field.z = E
+
+    # width = 500
+    # height = int(width * fem.hy_des / fem.hx_des)
+    #
+    # eps_map.layout = dict(
+    #     width=width,
+    #     height=height,
+    # )
 
 
 def main(rm_tmp_dir=True):
+
     fem, to = initialize()
     p0 = to.p0
 
     ## objective function
     def f_obj(p, grad, filt=True, proj=True, force_xsym=True):
+        if to.verbose:
+            print("eval obj func")
         sens_ana = np.size(grad) > 0
         goal, sens = run_fem(fem, to, p, sens_ana=sens_ana, filt=filt, proj=proj)
-        make_plots(fem, to, p, filt=filt, proj=proj)
         if sens_ana:
             grad[:] = sens
         to.param_history.append(p)
-        to.tot_obj_history.append(goal)
+        to.obj_history.append(goal)
         to.Nit_tot += 1
         to.Nit_loc += 1
+        if to.Nit_tot > 0:
+            make_plots(fem, to, p, filt=filt, proj=proj)
         return goal
 
     ###### MAIN OPTIMIZATION LOOP ############
@@ -179,30 +200,9 @@ def main(rm_tmp_dir=True):
     return p_thres, opt_thres
 
 
-def live_plot(imax=-1, freq=1.0, color="blue", lw=2, grid=True):
-    plots.clear_output(wait=True)
-    t = np.linspace(-1.0, +1.0, 100)
-    t = t[0:imax]
-    fig, ax = plt.subplots(1, 1, figsize=(8, 6))
-    ax.plot(t, np.sin(2 * np.pi * freq * t), lw=lw, color=color)
-    ax.grid(grid)
-    plt.show()
-
-
-#
-# def main():
-#     freq=1.
-#     color='blue'
-#     lw=2
-#     grid=True
-#     for i in range(100):
-#         live_plot(imax=i,freq=freq, color=color, lw=lw, grid=grid)
-
-
 @run_button.on_click
 def run_on_click(b):
-    with plots:
-        main()
+    main()
 
 
 app = Box(children=[fem_par, plots])

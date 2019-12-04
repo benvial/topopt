@@ -2,12 +2,14 @@
 import ipywidgets as widgets
 from ipywidgets import HBox, VBox, Layout, Box, ButtonStyle
 
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
+from IPython.display import display, clear_output
+
+#### ----- fem widgets
 fem_header = widgets.HTML(value="<h4>Simulation parameters</h4>")
-
-opt_header = widgets.HTML(value="<h4>Optimization parameters</h4>")
-
-sep = widgets.HTML(value="<h4></h4>")
 
 wl_box = widgets.FloatText(value=1.0, description="Wavelengh:")
 
@@ -42,13 +44,18 @@ epsmin_im_box = widgets.FloatText(value=0, step=0.01, description="Im $\epsilon_
 epsmax_re_box = widgets.FloatText(value=6, step=0.01, description="Re $\epsilon_2$:")
 epsmax_im_box = widgets.FloatText(value=0, step=0.01, description="Im $\epsilon_2$:")
 
+#### ----- optim widgets
+
+
+opt_header = widgets.HTML(value="<h4>Optimization parameters</h4>")
+
 
 maxeval_slider = widgets.IntSlider(
-    value=20, min=10, max=50, step=1, description="Max iter:"
+    value=2, min=10, max=50, step=1, description="Max iter:"
 )
 
 Nitmax_slider = widgets.IntSlider(
-    value=7, min=1, max=7, step=1, description="Max restart:"
+    value=1, min=1, max=7, step=1, description="Max restart:"
 )
 
 rfilt_box = widgets.FloatText(value=0.01, step=0.001, description="Filter radius:")
@@ -60,6 +67,11 @@ starting_dropdown = widgets.Dropdown(
 p0_slider = widgets.FloatSlider(
     value=0.5, min=0, max=1, step=0.01, description="Init density:"
 )
+
+
+#### -----
+sep = widgets.HTML(value="<h4></h4>")
+
 
 fem_par = params = VBox(
     children=[
@@ -89,4 +101,30 @@ fem_par = params = VBox(
     ]
 )
 
-plots = widgets.Output()
+conv_plt = go.FigureWidget()
+conv_plt.add_scatter(fill="tozeroy")
+conv_plt.layout.template = "plotly_white"
+conv_plt.layout.title = "Convergence"
+conv_plt.layout.xaxis.title = "iterations"
+conv_plt.layout.yaxis.title = "objective"
+# conv_plt = widgets.Output(layout=Layout(height='300px', width = '400px'))
+# eps_map = widgets.Output()
+eps_map = go.FigureWidget()
+eps_map.add_contour()
+eps_map.layout = dict(
+    plot_bgcolor="rgba(0, 0, 0, 0)",
+    # paper_bgcolor= "rgba(0, 0, 0, 0)",
+    title="Permittivity",
+    yaxis=dict(scaleanchor="x", scaleratio=1),
+)
+
+field_map = go.FigureWidget()
+field_map.add_contour()
+field_map.layout = dict(
+    plot_bgcolor="rgba(0, 0, 0, 0)",
+    # paper_bgcolor= "rgba(0, 0, 0, 0)",
+    title="Field",
+    yaxis=dict(scaleanchor="x", scaleratio=1),
+)
+
+plots = VBox(children=[conv_plt, eps_map, field_map])
