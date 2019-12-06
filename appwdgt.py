@@ -22,11 +22,11 @@ angle_slider = widgets.FloatSlider(
 )
 
 mesh_slider = widgets.IntSlider(
-    value=3, min=2, max=10, step=1, description="Mesh level:"
+    value=5, min=1, max=10, step=1, description="Mesh level:"
 )
 
 
-hx_box = widgets.FloatText(value=1.0, step=0.01, description="Design width:")
+hx_box = widgets.FloatText(value=4.0, step=0.01, description="Design width:")
 
 hy_box = widgets.FloatText(value=1.0, step=0.01, description="Design length:")
 
@@ -49,14 +49,14 @@ opt_header = widgets.HTML(value="<h4>Optimization parameters</h4>")
 
 
 maxeval_slider = widgets.IntSlider(
-    value=2, min=10, max=50, step=1, description="Max iter:"
+    value=20, min=10, max=50, step=1, description="Max iter:"
 )
 
 Nitmax_slider = widgets.IntSlider(
-    value=1, min=1, max=7, step=1, description="Max restart:"
+    value=7, min=1, max=7, step=1, description="Max restart:"
 )
 
-rfilt_box = widgets.FloatText(value=0.01, step=0.001, description="Filter radius:")
+rfilt_box = widgets.FloatText(value=0.05, step=0.001, description="Filter radius:")
 
 starting_dropdown = widgets.Dropdown(
     options=["constant", "random"], value="constant", description="Init type:"
@@ -102,15 +102,18 @@ fem_par = params = VBox(
 conv_plt = go.FigureWidget()
 conv_plt.add_scatter(fill="tozeroy")
 s = conv_plt.data[0]
-
+theme = "plotly_white"
+# theme="none"
 s.marker.color = "firebrick"
 # dict(color='firebrick', width=4)
-conv_plt.layout.template = "plotly_white"
+conv_plt.layout.template = theme
 conv_plt.layout.title = "Convergence"
 conv_plt.layout.xaxis.title = "iterations"
 conv_plt.layout.yaxis.title = "objective"
 # conv_plt = widgets.Output(layout=Layout(height='300px', width = '400px'))
 # eps_map = widgets.Output()
+
+
 eps_map = go.FigureWidget()
 eps_map.add_heatmap(colorscale="amp")
 eps_map.layout = dict(
@@ -119,15 +122,18 @@ eps_map.layout = dict(
     title="Permittivity",
     yaxis=dict(scaleanchor="x", scaleratio=1),
 )
+eps_map.layout.template = theme
 
 field_map = go.FigureWidget()
-field_map.add_contour(colorscale="Geyser")
+
+field_map.add_heatmap(colorscale="Geyser", zsmooth="best")
 field_map.layout = dict(
     plot_bgcolor="rgba(0, 0, 0, 0)",
     # paper_bgcolor= "rgba(0, 0, 0, 0)",
     title="Field",
     yaxis=dict(scaleanchor="x", scaleratio=1),
 )
+field_map.layout.template = theme
 
 design = go.layout.Shape(type="rect", x0=0, y0=0, x1=1, y1=1, line=dict(color="white"))
 

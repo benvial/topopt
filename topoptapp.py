@@ -40,7 +40,6 @@ def get_fem_params():
     fem.python_verbose = 0  #: str: GetDP verbose (int between 0 and 1)
     fem.type_des = type_des
     fem.quad_mesh_flag = True
-    fem.Nix = 55
     fem.inclusion_flag = False
     fem.hx_des = hx_box.value
     fem.hy_des = hy_box.value
@@ -55,6 +54,9 @@ def get_fem_params():
     fem.x_target = target_x_box.value
     fem.y_target = target_y_box.value
     fem.r_target = fem.lambda0 / 20
+
+    fem.Nix = 201
+    fem.Niy = int(fem.Nix * fem.hy_des / fem.hx_des)
     return fem
 
 
@@ -151,7 +153,7 @@ def make_plots(fem, to, p, filt=True, proj=True):
     ######
     fem.postpro_fields()
     u_tot = fem.get_field_map("u_tot.txt")
-    E = u_tot.real
+    E = np.flipud(u_tot.real)
     x_grid_map, y_grid_map = field_interp_grid(fem)
     coutour_field = field_map.data[0]
     coutour_field.x = x_grid_map
@@ -173,7 +175,7 @@ def make_plots(fem, to, p, filt=True, proj=True):
     # )
 
 
-def main(rm_tmp_dir=True):
+def main(rm_tmp_dir=False):
 
     fem, to = initialize()
     p0 = to.p0
@@ -210,6 +212,8 @@ def main(rm_tmp_dir=True):
         print("with value  = ", opt_thres)
     if rm_tmp_dir:
         fem.rm_tmp_dir()
+    # fem.postpro_fields_pos()
+    # fem.open_gmsh_gui()
     return p_thres, opt_thres
 
 

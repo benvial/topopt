@@ -24,6 +24,13 @@ gh:
 
 clean: rmonelab rmtmp
 	@find . | grep -E "(__pycache__|\.pyc|\.pyo$\)" | xargs rm -rf
+	- rm -rf .ipynb_checkpoints
+	- rm -f .app*
+
+run:
+	jupyter notebook --no-browser &
+	sleep 3 && $(BROWSER) http://localhost:8888/apps/app.ipynb
+
 
 
 lstmp:

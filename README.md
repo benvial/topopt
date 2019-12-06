@@ -1,6 +1,8 @@
 # TopOpt App
 
-##### A web application for the topology opimization of an optical lens
+**A web application for the topology optimization of an optical lens.**
+
+![screenshot](./screenshot.png)
 
 
 ## Try it live
